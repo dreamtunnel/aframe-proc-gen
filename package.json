@@ -5,8 +5,7 @@
   "main": "dist/terrain.js",
   "scripts": {
     "test": "jest",
-    "build": "esbuild src/terrain.js --bundle --minify --outfile=dist/terrain.js",
-    "publish": "npm publish"
+    "build": "esbuild src/terrain.js --bundle --minify --outfile=dist/terrain.js"
   },
   "keywords": [
     "aframe"
