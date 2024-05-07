@@ -1,0 +1,22 @@
+{
+  "name": "aframe-terrain-component",
+  "version": "0.1.0",
+  "description": "A-Frame generative terrain component",
+  "main": "dist/terrain.js",
+  "scripts": {
+    "test": "jest",
+    "build": "esbuild src/terrain.js --bundle --minify --outfile=dist/terrain.js",
+    "publish": "npm publish"
+  },
+  "keywords": [
+    "aframe"
+  ],
+  "author": "jwdwr",
+  "license": "ISC",
+  "dependencies": {
+    "simplex-noise": "^4.0.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.0"
+  }
+}
