@@ -1,4 +1,5 @@
 import { createNoise2D } from "simplex-noise";
+import alea from "alea";
 
 AFRAME.registerComponent("terrain", {
   schema: {
@@ -11,6 +12,7 @@ AFRAME.registerComponent("terrain", {
     avgHeight: { type: "number", default: 0 },
     distanceScale: { type: "number", default: 1 },
     colors: { type: "array", default: ["#000000", "#4e3f30", "#686256", "#7e837f", "#a8a9ad"] },
+    seed: { type: "number", default: 0 },
   },
   map: function (val, smin, smax, emin, emax) {
     const t = (val - smin) / (smax - smin);
@@ -114,9 +116,22 @@ AFRAME.registerComponent("terrain", {
     this.el.appendChild(waterPlane);
   },
   init: function () {
-    this.noise2D = createNoise2D();
+    const prng = alea(this.data.seed);
+    this.noise2D = createNoise2D(prng);
     const mesh = this.generateMesh();
     this.addWater();
     this.el.setObject3D("mesh", mesh);
+    this.updateChildren();
+  },
+
+  updateChildren: function () {
+    const el = this.el;
+    const data = this.data;
+    el.setAttribute("terrain-parameters", {});
+
+    el.querySelectorAll("[landform], [decoration]").forEach((childEl) => {
+      childEl.components["landform"]?.modify();
+      childEl.components["decoration"]?.decorate();
+    });
   },
 });

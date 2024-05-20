@@ -5,7 +5,8 @@
   "main": "dist/terrain.js",
   "scripts": {
     "test": "jest",
-    "build": "esbuild src/terrain.js --bundle --minify --outfile=dist/terrain.js"
+    "build": "esbuild src/index.js --bundle --minify --outfile=dist/index.js",
+    "dev": "concurrently \"nodemon --watch src --exec 'npm run build'\" \"http-server example/\""
   },
   "keywords": [
     "aframe"
@@ -13,9 +14,13 @@
   "author": "jwdwr",
   "license": "ISC",
   "dependencies": {
+    "alea": "^1.0.1",
     "simplex-noise": "^4.0.1"
   },
   "devDependencies": {
-    "esbuild": "^0.21.0"
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.21.0",
+    "http-server": "^14.1.1",
+    "nodemon": "^3.1.0"
   }
 }
