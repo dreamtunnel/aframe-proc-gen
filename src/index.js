@@ -1,3 +1,3 @@
 import "./terrain.js";
-import "./landform.js";
+import "./feature.js";
 import "./decoration.js";

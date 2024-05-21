@@ -1,10 +1,9 @@
-import { createNoise2D } from "simplex-noise";
-import alea from "alea";
+import { colorize, createOctave, iterateVertices, map } from "./util/helpers";
 
 AFRAME.registerComponent("terrain", {
   schema: {
-    width: { type: "number", default: 100 },
-    height: { type: "number", default: 100 },
+    width: { type: "number", default: 200 },
+    height: { type: "number", default: 200 },
     flatRadius: { type: "number", default: 10 },
     smoothness: { type: "number", default: 1 },
     minHeight: { type: "number", default: -10 },
@@ -13,26 +12,6 @@ AFRAME.registerComponent("terrain", {
     distanceScale: { type: "number", default: 1 },
     colors: { type: "array", default: ["#000000", "#4e3f30", "#686256", "#7e837f", "#a8a9ad"] },
     seed: { type: "number", default: 0 },
-  },
-  map: function (val, smin, smax, emin, emax) {
-    const t = (val - smin) / (smax - smin);
-    return (emax - emin) * t + emin;
-  },
-  noise: function (nx, ny) {
-    return this.noise2D(nx, ny) / 2 + 0.5;
-  },
-  octave: function (nx, ny, octaves, smoothness) {
-    let val = 0;
-    let freq = 1 / smoothness;
-    let max = 0;
-    let amp = 1;
-    for (let i = 0; i < octaves; i++) {
-      val += this.noise(nx * freq, ny * freq) * amp;
-      max += amp;
-      amp /= 2;
-      freq *= 2;
-    }
-    return val / max;
   },
   generateMesh: function () {
     const {
@@ -46,8 +25,8 @@ AFRAME.registerComponent("terrain", {
       colors,
       distanceScale,
     } = this.data;
-    const geometry = new THREE.PlaneGeometry(width, height, width - 1, height - 1);
 
+    const geometry = new THREE.PlaneGeometry(width, height, width - 1, height - 1);
     geometry.receiveShadow = true;
     geometry.castShadow = true;
 
@@ -55,9 +34,7 @@ AFRAME.registerComponent("terrain", {
     const colorArray = new Float32Array(geometry.attributes.position.count * 3);
     const transitionZone = flatRadius * 2;
 
-    for (let i = 0, j = 0; i < positions.length; i += 3, j += 1) {
-      const nx = (j % width) / width;
-      const ny = Math.floor(j / width) / height;
+    iterateVertices(positions, width, height, (i, nx, ny) => {
       const dx = nx - 0.5;
       const dy = ny - 0.5;
       const distanceFromCenter = Math.sqrt(dx * dx + dy * dy);
@@ -75,7 +52,7 @@ AFRAME.registerComponent("terrain", {
         const heightDiff = maxHeight - minHeight;
         positions[i + 2] = Math.min(
           Math.max(
-            this.map(elevation, 0, 1, avgHeight - heightDiff, avgHeight + heightDiff) *
+            map(elevation, 0, 1, avgHeight - heightDiff, avgHeight + heightDiff) *
               factor *
               distanceFromCenter ** distanceScale,
             minHeight
@@ -85,17 +62,10 @@ AFRAME.registerComponent("terrain", {
       }
 
       const z = positions[i + 2];
-      let color;
-      if (z < -0.1) color = new THREE.Color(colors[0]);
-      else if (z < 2) color = new THREE.Color(colors[1]);
-      else if (z < 5) color = new THREE.Color(colors[2]);
-      else if (z < 20) color = new THREE.Color(colors[3]);
-      else color = new THREE.Color(colors[4]);
+      colorize(z, colors, colorArray, i);
+    });
 
-      color.toArray(colorArray, i);
-    }
     geometry.setAttribute("color", new THREE.BufferAttribute(colorArray, 3));
-
     geometry.rotateX(-Math.PI / 2);
     geometry.computeVertexNormals();
 
@@ -105,19 +75,22 @@ AFRAME.registerComponent("terrain", {
     return new THREE.Mesh(geometry, material);
   },
   addWater: function () {
-    // Create the water plane
-    const waterPlane = document.createElement("a-plane");
-    waterPlane.setAttribute("position", "0 -0.1 0");
-    waterPlane.setAttribute("rotation", "-90 0 0");
-    waterPlane.setAttribute("width", this.data.width);
-    waterPlane.setAttribute("height", this.data.height);
-    waterPlane.setAttribute("color", "#44ccff");
-    waterPlane.setAttribute("opacity", "0.8");
-    this.el.appendChild(waterPlane);
+    const waterGeometry = new THREE.PlaneGeometry(this.data.width, this.data.height);
+    const waterMaterial = new THREE.MeshPhongMaterial({
+      color: "#44ccff",
+      opacity: 0.8,
+      transparent: true,
+    });
+    const waterMesh = new THREE.Mesh(waterGeometry, waterMaterial);
+    waterMesh.rotation.x = -Math.PI / 2;
+    waterMesh.position.y = -0.1;
+
+    this.el.object3D.add(waterMesh);
   },
+
   init: function () {
-    const prng = alea(this.data.seed);
-    this.noise2D = createNoise2D(prng);
+    this.octave = createOctave(this.data.seed);
+
     const mesh = this.generateMesh();
     this.addWater();
     this.el.setObject3D("mesh", mesh);
@@ -129,9 +102,9 @@ AFRAME.registerComponent("terrain", {
     const data = this.data;
     el.setAttribute("terrain-parameters", {});
 
-    el.querySelectorAll("[landform], [decoration]").forEach((childEl) => {
-      childEl.components["landform"]?.modify();
-      childEl.components["decoration"]?.decorate();
+    el.querySelectorAll("[terrain-feature], [terrain-decoration]").forEach((childEl) => {
+      childEl.components["terrain-feature"]?.modify();
+      childEl.components["terrain-decoration"]?.decorate();
     });
   },
 });

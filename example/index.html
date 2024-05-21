@@ -11,11 +11,12 @@
         id="terrain"
         terrain="minHeight: -1; avgHeight: 20; maxHeight: 100; colors: #003300, #2E7D32, #558B2F, #9CCC65, #ddd;"
       >
-        <a-entity landform="peak: 100; radius: 20; centerZ: 20; centerX: 20"></a-entity>
-        <a-entity landform="peak: 100; radius: 20; centerZ: 20; centerX: -20"></a-entity>
-        <a-entity landform="peak: -10; radius: 20; centerZ: 20; centerX: 0"></a-entity>
+        <a-entity terrain-feature="peak: 80; radius: 20; centerZ: 45; centerX: 0"></a-entity>
+        <a-entity terrain-feature="peak: 50; radius: 20; centerZ: 35; centerX: 20"></a-entity>
+        <a-entity terrain-feature="peak: 50; radius: 20; centerZ: 35; centerX: -20"></a-entity>
+        <a-entity terrain-feature="peak: -10; radius: 25; centerZ: 30; centerX: 0"></a-entity>
 
-        <a-entity decoration="copies: 200; minHeight: 20; maxHeight: 500">
+        <a-entity terrain-decoration="copies: 200; minHeight: 20; maxHeight: 500">
           <a-entity>
             <a-cylinder radius="0.3" height="5" color="#8B4513"></a-cylinder>
             <a-cone
@@ -27,7 +28,7 @@
             ></a-cone
           ></a-entity>
         </a-entity>
-        <a-entity decoration="copies: 50; minHeight: 0; maxHeight: 20">
+        <a-entity terrain-decoration="copies: 200; minHeight: 10; maxHeight: 20">
           <a-entity>
             <a-cylinder radius="0.2" height="3" color="#bbaaaa"></a-cylinder>
             <a-sphere position="0 1.5 0" radius="0.8" color="#22ccaa"></a-sphere>
