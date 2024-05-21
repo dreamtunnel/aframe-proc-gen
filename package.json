@@ -1,8 +1,16 @@
 {
-  "name": "aframe-terrain-component",
+  "name": "aframe-proc-gen",
   "version": "0.1.0",
-  "description": "A-Frame generative terrain component",
-  "main": "dist/terrain.js",
+  "description": "A-Frame components for procedural generation",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dreamtunnel/aframe-proc-gen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dreamtunnel/aframe-proc-gen/issues"
+  },
+  "homepage": "https://github.com/dreamtunnel/aframe-proc-gen#readme"
   "scripts": {
     "test": "jest",
     "build": "esbuild src/index.js --bundle --minify --outfile=dist/index.js",
