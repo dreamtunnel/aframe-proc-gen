@@ -1,4 +1,4 @@
-import { colorize, createOctave, iterateVertices } from "./util/helpers";
+import { colorize, createOctave, iterateVertices } from "../util/helpers";
 
 AFRAME.registerComponent("terrain-feature", {
   schema: {

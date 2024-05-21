@@ -10,7 +10,7 @@
   "bugs": {
     "url": "https://github.com/dreamtunnel/aframe-proc-gen/issues"
   },
-  "homepage": "https://github.com/dreamtunnel/aframe-proc-gen#readme"
+  "homepage": "https://github.com/dreamtunnel/aframe-proc-gen#readme",
   "scripts": {
     "test": "jest",
     "build": "esbuild src/index.js --bundle --minify --outfile=dist/index.js",
